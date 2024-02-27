@@ -175,7 +175,8 @@ convertShortPasses(ShortPass,negativ,Length,Persons,Max,Pass) :-
 %%% DCG Grammar %%%
 
 dcg_constraint([[]]) -->
-	dcg_whitespaces.
+	% dcg_whitespaces.
+    parse_dcg_whitespaces_input.
 dcg_constraint(Constraint) -->
 	dcg_pattern(Pattern),
 	dcg_and_patterns(Patterns),
@@ -190,11 +191,14 @@ dcg_constraint(Constraint) -->
 	}.
 
 dcg_pattern(Constraint) -->
-	dcg_whitespaces,
+	% dcg_whitespaces,
+    parse_dcg_whitespaces_input,
 	dcg_throw_or_constraint(Throw),
-	dcg_whitespaces,
+	% dcg_whitespaces,
+    parse_dcg_whitespaces_input,
 	dcg_throws_or_constraints(Pattern),
-	dcg_whitespaces,
+	% dcg_whitespaces,
+    parse_dcg_whitespaces_input,
 	{
 		dcgh_merge_constraints(Throw, Pattern, Constraint, concat)
 	}.
@@ -230,7 +234,8 @@ dcg_throw_or_constraint(Constraint) -->
 	
 dcg_throws_or_constraints(NewConstraint) -->
 	dcg_whitespace,
-	dcg_whitespaces,
+	% dcg_whitespaces,
+    parse_dcg_whitespaces_input,
 	dcg_throw_or_constraint(Constraint),
 	dcg_throws_or_constraints(Constraints),
 	{
@@ -393,6 +398,34 @@ dcg_s -->
 dcg_dot -->
 	".".
 	
+
+%%% patch by havarpan & gpt4 (Feb 27 2024) start
+
+% case 1: input is already a list of character codes (assumes ascii range range)
+ensure_char_codes(List, Codes) :-
+    is_list(List),
+    List = [H|_],
+    integer(H), H >= 0, H =< 127,
+    !, Codes = List.
+% case 2: input is a list of characters
+ensure_char_codes(List, Codes) :-
+    is_list(List),
+    maplist(char_code, List, Codes).
+% case 3: input is a string
+ensure_char_codes(String, Codes) :-
+    string(String),
+    string_codes(String, Codes).
+% case 4: fallback for empty list
+ensure_char_codes([], []).
+
+% the old dcg_whitespaces calls are replaced with this
+parse_dcg_whitespaces_input(Input, Result) :-
+    ensure_char_codes(Input, Codes),
+    phrase(dcg_whitespaces, Codes, Result).
+
+%%% patch by havarpan & gpt4 (Feb 27 2024) end
+
+
 dcg_whitespaces -->
 	dcg_whitespace,
 	dcg_whitespaces.
