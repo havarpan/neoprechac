@@ -31,6 +31,9 @@ def number_to_alphabet(n):
         return n
     if int(n) < 10:
         return n
+    if int(n) - 10 > 25:
+        print('none', end='')
+        sys.exit()
     return ascii_lowercase[int(n) - 10]
 
 

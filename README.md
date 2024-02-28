@@ -9,4 +9,4 @@ The original [prechacthis](https://github.com/prechac/prechacthis) repository pa
 
 Runs [here](http://209.38.178.145/neoprechac/src/index.php) with swi-prolog 9.2.1 on ubuntu.
 
-The passist animation link won't show when the pattern period is divisible by the number of jugglers. 
+(The passist animation link shouldn't show when the pattern period is divisible by the number of jugglers. Currently it does show though.)
