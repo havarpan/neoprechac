@@ -538,12 +538,35 @@ writeOrbits(Pattern, NumberOfJugglers) :-
 	print(Clubs),
 	format("</td></tr>\n").
 	
+
+list_to_atom(List, Atom) :-
+    string_codes(Str, List),
+    atom_string(Atom, Str).
+
+surround_with_quotes(Input, Output) :-
+    list_to_atom(Input, Atom),
+    atom_concat('"', Atom, Temp),
+    atom_concat(Temp, '"', Output).
+
+%%% patch start (havarpan Feb 28 2024)
+patternStrToSiteswap(PatternStr, NumberOfJugglers, SiteSwap) :-
+	surround_with_quotes(PatternStr, QuotedPatternStr),
+    number_string(NumberOfJugglers, NumberOfJugglersStr),
+    process_create(path('python3'), ['/var/www/new_prechac/tmp/src/python/patternStrToSiteswap.py', QuotedPatternStr, NumberOfJugglersStr], [stdout(pipe(In))]),
+    read_string(In, _, SiteSwap),
+    close(In).
+%%% patch end
+
 writeJoepassLink(Pattern, NumberOfJugglers, SwapList, JoePass_Cookies) :-
 	pattern_to_string(Pattern, PatternStr),
+	patternStrToSiteswap(PatternStr, NumberOfJugglers, SiteSwap),
 	jp_filename(Pattern, FileName),
 	JoePass_Cookies = [JoePass_Download, JoePass_Style, JoePass_File],
 	format("<div class='jp_link'>\n"),
 	format("<form id='joepass_form' action='./joepass.php' method='post'>\n"),
+	%%% patch start (havarpan Feb 28 2024)
+    (SiteSwap \= 'none' -> format("<p><a href='https://passist.org/siteswap/~s?jugglers=~w' target='_blank'>passist animation</a></p>\n", [SiteSwap, NumberOfJugglers]) ; true),
+	%%% patch end
 	format("<input type='hidden' name='pattern' value='~s'>\n", [PatternStr]),
 	format("<input type='hidden' name='persons' value='~w'>\n", [NumberOfJugglers]),
 	format("<input type='hidden' name='file' value='~w'>\n", [FileName]),
