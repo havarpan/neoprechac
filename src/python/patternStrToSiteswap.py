@@ -48,7 +48,7 @@ def patternStrToSiteswap(patternStr, n):
         return
     for triple in triples:
         first_number = triple.split(",")[0].split("(")[-1]
-        first_number = Fraction(float(first_number)).limit_denominator(1000)
+        first_number = float(Fraction(float(first_number)*n).limit_denominator(1000)/n)
         first_number = number_to_alphabet(str(round(n * float(first_number))))
         result += first_number + (n - 1) * "0"
     shifted_results = []
