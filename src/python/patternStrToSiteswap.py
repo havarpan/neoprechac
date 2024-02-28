@@ -1,7 +1,6 @@
 import re
 from string import ascii_lowercase
-from math import gcd
-from fractions import Fraction
+from math import gcd, ceil
 import sys
 
 
@@ -48,7 +47,12 @@ def patternStrToSiteswap(patternStr, n):
         return
     for triple in triples:
         first_number = triple.split(",")[0].split("(")[-1]
-        first_number = float(Fraction(float(first_number)*n).limit_denominator(1000)/n)
+        # try to cope with prechacthis rounding convention
+        if abs(float(first_number)*n - int(float(first_number)*n)) < 10**(-5):
+            myfun = round
+        else:
+            myfun = ceil
+        first_number = float(myfun(float(first_number)*n)/n)
         first_number = number_to_alphabet(str(round(n * float(first_number))))
         result += first_number + (n - 1) * "0"
     shifted_results = []
