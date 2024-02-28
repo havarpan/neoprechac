@@ -565,7 +565,7 @@ writeJoepassLink(Pattern, NumberOfJugglers, SwapList, JoePass_Cookies) :-
 	format("<div class='jp_link'>\n"),
 	format("<form id='joepass_form' action='./joepass.php' method='post'>\n"),
 	%%% patch start (havarpan Feb 28 2024)
-    (SiteSwap \= 'none' -> format("<p><a href='https://passist.org/siteswap/~s?jugglers=~w' target='_blank'>passist animation</a></p>\n", [SiteSwap, NumberOfJugglers]) ; true),
+	(sub_string(SiteSwap, _, _, _, 'none') -> true ; format("<p><a href='https://passist.org/siteswap/~s?jugglers=~w' target='_blank'>passist animation</a></p>\n", [SiteSwap, NumberOfJugglers])),
 	%%% patch end
 	format("<input type='hidden' name='pattern' value='~s'>\n", [PatternStr]),
 	format("<input type='hidden' name='persons' value='~w'>\n", [NumberOfJugglers]),
