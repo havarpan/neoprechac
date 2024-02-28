@@ -1,5 +1,6 @@
 import re
 from string import ascii_lowercase
+from math import gcd
 from fractions import Fraction
 import sys
 
@@ -42,7 +43,7 @@ def patternStrToSiteswap(patternStr, n):
     result = ""
     triples = list(re.findall(r"p\(\d[\.\d]*,\d+,\d+\)", patternStr))
     pattern_length = len(triples)
-    if (pattern_length % n) == 0:
+    if gcd(pattern_length, n) != 1:
         print('none', end='')
         return
     for triple in triples:
@@ -55,7 +56,9 @@ def patternStrToSiteswap(patternStr, n):
         shifted_result = shift_left(result, int(len(result) / n))
         shifted_results.append(shifted_result)
         result = shifted_result
-    print(replace_zeros(shifted_results), end='')
+    siteswap = ''.join(replace_zeros(shifted_results)[:pattern_length])
+    print(siteswap, end='')
+
 
 
 patternStr = sys.argv[1]
