@@ -552,7 +552,7 @@ surround_with_quotes(Input, Output) :-
 patternStrToSiteswap(PatternStr, NumberOfJugglers, SiteSwap) :-
 	surround_with_quotes(PatternStr, QuotedPatternStr),
     number_string(NumberOfJugglers, NumberOfJugglersStr),
-    process_create(path('python3'), ['/var/www/new_prechac/neoprechac/src/python/patternStrToSiteswap.py', QuotedPatternStr, NumberOfJugglersStr], [stdout(pipe(In))]),
+    process_create(path('python3'), ['python/patternStrToSiteswap.py', QuotedPatternStr, NumberOfJugglersStr], [stdout(pipe(In))]),
     read_string(In, _, SiteSwap),
     close(In).
 %%% patch end
