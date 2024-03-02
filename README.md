@@ -11,6 +11,6 @@ Runs [here](http://209.38.178.145/neoprechac/src/index.php) with swi-prolog 9.2.
 
 Animation link:
 - passist when `gcd(pattern length, number of jugglers) = 1`
-- jugglinglab when `pattern length % number of jugglers = 0` (buggy in some cases)
+- jugglinglab when `pattern length % number of jugglers = 0` (bugs in some cases, needs hand spec)
 - no link otherwise
 
