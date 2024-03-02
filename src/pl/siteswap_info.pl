@@ -539,6 +539,7 @@ writeOrbits(Pattern, NumberOfJugglers) :-
 	format("</td></tr>\n").
 	
 
+%%% patch start (havarpan Feb 28 2024)
 list_to_atom(List, Atom) :-
     string_codes(Str, List),
     atom_string(Atom, Str).
@@ -548,7 +549,6 @@ surround_with_quotes(Input, Output) :-
     atom_concat('"', Atom, Temp),
     atom_concat(Temp, '"', Output).
 
-%%% patch start (havarpan Feb 28 2024)
 patternStrToSiteswap(PatternStr, NumberOfJugglers, SiteSwap) :-
 	surround_with_quotes(PatternStr, QuotedPatternStr),
     number_string(NumberOfJugglers, NumberOfJugglersStr),
