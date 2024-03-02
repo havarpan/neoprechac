@@ -71,7 +71,7 @@ def passist_link(triples, n):
     # merge shifted one-juggler siteswaps and output the result
     siteswap = ''.join(replace_zeros(shifted_one_juggler_siteswaps, pattern_length))
 
-    url = f'https://passist.org/siteswap/~{siteswap}?jugglers={n}'
+    url = f'https://passist.org/siteswap/{siteswap}?jugglers={n}'
     return url
 
 
