@@ -86,8 +86,8 @@ def build_jlab_pattern(throws, pass_flags, n):
         throw_with_p = f'{throw_number}p' if pass_flag else f'{throw_number}'
         throws_with_ps.append(throw_with_p)
 
-    # (pattern_length / n) kokonaisluku
-    # shiftataan n:n jaksoissa
+    # (pattern_length / n) integer
+    # shift by that n times
 
     # shifted one-person siteswaps
     pattern = throws_with_ps
@@ -141,7 +141,7 @@ def patternStrToAnimationUrl(patternStr, n):
     pattern_length = len(triples)
 
     # do we know how to create the animation link
-    # todo: remaining cases (gcd != 1 and not equal)
+    # todo: remaining cases
     animation_type = 'passist'
     if gcd(pattern_length, n) != 1:
         if (pattern_length % n) == 0:
