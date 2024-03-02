@@ -549,23 +549,23 @@ surround_with_quotes(Input, Output) :-
     atom_concat('"', Atom, Temp),
     atom_concat(Temp, '"', Output).
 
-patternStrToSiteswap(PatternStr, NumberOfJugglers, SiteSwap) :-
+patternStrToAnimationUrl(PatternStr, NumberOfJugglers, Url) :-
 	surround_with_quotes(PatternStr, QuotedPatternStr),
     number_string(NumberOfJugglers, NumberOfJugglersStr),
-    process_create(path('python3'), ['python/patternStrToSiteswap.py', QuotedPatternStr, NumberOfJugglersStr], [stdout(pipe(In))]),
-    read_string(In, _, SiteSwap),
+    process_create(path('python3'), ['python/patternStrToAnimationUrl.py', QuotedPatternStr, NumberOfJugglersStr], [stdout(pipe(In))]),
+    read_string(In, _, Url),
     close(In).
 %%% patch end
 
 writeJoepassLink(Pattern, NumberOfJugglers, SwapList, JoePass_Cookies) :-
 	pattern_to_string(Pattern, PatternStr),
-	patternStrToSiteswap(PatternStr, NumberOfJugglers, SiteSwap),
 	jp_filename(Pattern, FileName),
 	JoePass_Cookies = [JoePass_Download, JoePass_Style, JoePass_File],
 	format("<div class='jp_link'>\n"),
 	format("<form id='joepass_form' action='./joepass.php' method='post'>\n"),
 	%%% patch start (havarpan Feb 28 2024)
-	(sub_string(SiteSwap, _, _, _, 'none') -> true ; format("<p><a href='https://passist.org/siteswap/~s?jugglers=~w' target='_blank'>passist animation</a></p>\n", [SiteSwap, NumberOfJugglers])),
+	patternStrToAnimationUrl(PatternStr, NumberOfJugglers, Url),
+	(sub_string(Url, _, _, _, 'none') -> true ; format("<p><a href='~s' target='_blank'>online animation</a></p>\n", [Url])),
 	%%% patch end
 	format("<input type='hidden' name='pattern' value='~s'>\n", [PatternStr]),
 	format("<input type='hidden' name='persons' value='~w'>\n", [NumberOfJugglers]),
