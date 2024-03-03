@@ -5,6 +5,7 @@ from ast import literal_eval
 import sys
 
 
+# helper for passist link
 def shift_left(mypattern, myshift):
     newpattern = list(mypattern)
     i = 0
@@ -13,7 +14,7 @@ def shift_left(mypattern, myshift):
         i += 1
     return "".join(newpattern)
 
-
+# helper for passist link
 def replace_zeros(strings: list, pattern_length: int):
     result = ""
     for i in range(pattern_length):
@@ -25,7 +26,7 @@ def replace_zeros(strings: list, pattern_length: int):
         result += replace_zero
     return result
 
-
+# helper for passist link
 def number_to_alphabet(n):
     if not n.isdigit():
         return n
@@ -86,14 +87,14 @@ def build_jlab_pattern(throws, pass_flags, n):
         throw_with_p = f'{throw_number}p' if pass_flag else f'{throw_number}'
         throws_with_ps.append(throw_with_p)
 
-    # (pattern_length / n) integer
+    # pattern_length / n is integer
     # shift by that n times
 
     # shifted one-person siteswaps
     pattern = throws_with_ps
     shifted_patterns = [pattern]
     for i in range(1,n):
-        i *= len(pattern)//n # this should always be an integer
+        i *= len(pattern)//n
         shifted_pattern = []
         for j in range(len(pattern)):
             shifted_pattern.append(
@@ -101,7 +102,7 @@ def build_jlab_pattern(throws, pass_flags, n):
             )
         shifted_patterns.append(shifted_pattern)
 
-    # transpose
+    # https://stackoverflow.com/questions/6473679/transpose-list-of-lists
     transposed_patterns = list(map(list, zip(*shifted_patterns)))
 
     pattern = ''.join(
@@ -153,6 +154,7 @@ def patternStrToAnimationUrl(patternStr, n):
     if animation_type == 'passist':
         url = passist_link(triples, n)
     else:
+        # todo: fix hand specs
         url = jugglinglab_link(triples, n)
 
     print(url, end='')
