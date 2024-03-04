@@ -79,7 +79,7 @@ def passist_link(triples, n):
 # helper for jugglinglab_link
 def build_jlab_pattern(throws, pass_flags, n):
 
-    # one-person siteswap, 'p' included
+    # one-person siteswap, 'p' (passes) included
     throws_with_ps = []
     for i in range(len(throws)):
         throw_number = throws[i]
@@ -125,6 +125,11 @@ def jugglinglab_link(triples, n):
 
     throws = tuple(t[0] for t in triples)
     pass_flags = tuple(t[1] for t in triples)
+
+    # test if more than one pass flag (disabled)
+    if len(set(pass_flags)) >= 3: # three because 0 is self and 1 is p_1 in prechac
+        print('none', end='')
+        sys.exit()
 
     pattern = build_jlab_pattern(throws, pass_flags, n)
 
