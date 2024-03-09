@@ -84,32 +84,49 @@ def build_jlab_pattern(throws, pass_flags, n):
     for i in range(len(throws)):
         throw_number = throws[i]
         pass_flag = pass_flags[i]
-        throw_with_p = f'{throw_number}p' if pass_flag else f'{throw_number}'
+        if len(set(pass_flags)) <= 2:
+            throw_with_p = f'{throw_number}p' if pass_flag else f'{throw_number}'
+        else:
+            throw_with_p = f'{throw_number}p{int(pass_flag)+1}' if int(pass_flag)>0 else f'{throw_number}'
+            # print('none', end='')
+            # sys.exit()
+        # throw_with_p = f'{throw_number}p' if pass_flag else f'{throw_number}'
         throws_with_ps.append(throw_with_p)
-
-    # pattern_length / n is integer
-    # shift by that n times
 
     # shifted one-person siteswaps
     pattern = throws_with_ps
+
     shifted_patterns = [pattern]
     for i in range(1,n):
+
         i *= len(pattern)//n
+
         shifted_pattern = []
         for j in range(len(pattern)):
             shifted_pattern.append(
                 pattern[(j - i) % len(pattern)]
             )
+        if len(set(pass_flags)) >= 3:
+            for index, entry in enumerate(shifted_pattern):
+                if len(entry) == 3: # we have a number
+                    entry = list(entry)
+                    mypassflag = int(entry[-1])
+                    mypassflag = ((((mypassflag + i) % n) - 1) % n) + 1 # perhaps too complicated
+                    entry[-1] = mypassflag
+                    shifted_pattern[index] = ''.join(list(map(str,entry)))
+
         shifted_patterns.append(shifted_pattern)
 
     # https://stackoverflow.com/questions/6473679/transpose-list-of-lists
     transposed_patterns = list(map(list, zip(*shifted_patterns)))
 
+    # this has incorrect pass flags
     pattern = ''.join(
         '<' + '|'.join(p) + '>' for p in transposed_patterns
     )
 
     return pattern
+
 
 def jugglinglab_link(triples, n):
 
@@ -127,9 +144,9 @@ def jugglinglab_link(triples, n):
     pass_flags = tuple(t[1] for t in triples)
 
     # test if more than one pass flag (disabled)
-    if len(set(pass_flags)) >= 3: # three because 0 is self and 1 is p_1 in prechac
-        print('none', end='')
-        sys.exit()
+    # if len(set(pass_flags)) >= 3: # three because 0 is self and 1 is p_1 in prechac
+        # print('none', end='')
+        # sys.exit()
 
     pattern = build_jlab_pattern(throws, pass_flags, n)
 
@@ -151,6 +168,7 @@ def patternStrToAnimationUrl(patternStr, n):
     animation_type = 'passist'
     if gcd(pattern_length, n) != 1:
         if (pattern_length % n) == 0:
+        # if pattern_length >= n:
             animation_type='jugglinglab'
         else:
             print('none', end='')
