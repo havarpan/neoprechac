@@ -4,7 +4,6 @@ from math import gcd, ceil
 from ast import literal_eval
 import sys
 
-
 # helper for passist link
 def shift_left(mypattern, myshift):
     newpattern = list(mypattern)
@@ -84,13 +83,12 @@ def build_jlab_pattern(throws, pass_flags, n):
     for i in range(len(throws)):
         throw_number = throws[i]
         pass_flag = pass_flags[i]
-        if len(set(pass_flags)) <= 2:
+        if len(set(pass_flags)) <= 2 and max(pass_flags) <= 1:
             throw_with_p = f'{throw_number}p' if pass_flag else f'{throw_number}'
         else:
             throw_with_p = f'{throw_number}p{int(pass_flag)+1}' if int(pass_flag)>0 else f'{throw_number}'
             # print('none', end='')
             # sys.exit()
-        # throw_with_p = f'{throw_number}p' if pass_flag else f'{throw_number}'
         throws_with_ps.append(throw_with_p)
 
     # shifted one-person siteswaps
@@ -99,19 +97,19 @@ def build_jlab_pattern(throws, pass_flags, n):
     shifted_patterns = [pattern]
     for i in range(1,n):
 
-        i *= len(pattern)//n
+        k = i*len(pattern)//n
 
         shifted_pattern = []
         for j in range(len(pattern)):
             shifted_pattern.append(
-                pattern[(j - i) % len(pattern)]
+                pattern[(j - k) % len(pattern)]
             )
-        if len(set(pass_flags)) >= 3:
+        if len(set(pass_flags)) >= 3 or max(pass_flags) >= 2:
             for index, entry in enumerate(shifted_pattern):
                 if len(entry) == 3: # we have a number
                     entry = list(entry)
-                    mypassflag = int(entry[-1])
-                    mypassflag = ((((mypassflag + i) % n) - 1) % n) + 1 # perhaps too complicated
+                    mypassflag = int(entry[-1]) # between 1 and n (inclusive)
+                    mypassflag = ((mypassflag - 1 + i) % n) + 1
                     entry[-1] = mypassflag
                     shifted_pattern[index] = ''.join(list(map(str,entry)))
 
