@@ -118,7 +118,6 @@ def build_jlab_pattern(throws, pass_flags, n):
     # https://stackoverflow.com/questions/6473679/transpose-list-of-lists
     transposed_patterns = list(map(list, zip(*shifted_patterns)))
 
-    # this has incorrect pass flags
     pattern = ''.join(
         '<' + '|'.join(p) + '>' for p in transposed_patterns
     )
