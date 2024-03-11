@@ -89,9 +89,8 @@ def build_jlab_pattern(throws, pass_flags, n):
             throw_with_p = f'{throw_number}p{int(pass_flag)+1}' if int(pass_flag)>0 else f'{throw_number}'
         throws_with_ps.append(throw_with_p)
 
-    # shifted one-person throws
+    # shifted one-person patterns
     pattern = throws_with_ps
-
     shifted_patterns = [pattern]
     for i in range(1,n):
 
