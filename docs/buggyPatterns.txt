@@ -1,5 +1,5 @@
 buggy pattern examples
-
+# refers to joepass because here they work well // havarpan Mar 11 2024
 
 info page:
 
