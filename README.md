@@ -7,7 +7,6 @@ The original [prechacthis](https://github.com/prechac/prechacthis) repository pa
 - `src/python` added (calculate animation link)
 - `src/pl/siteswap_info.pl` modified (display animation link)
 
-Under maintenance! (Wed 13 Mar 13:20 EET)
 Runs [here](http://209.38.178.145/neoprechac/src/index.php) with swi-prolog 9.2.1 on ubuntu.
 
 Animation link:
