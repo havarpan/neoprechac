@@ -12,4 +12,4 @@ Runs at [https://neoprechac.org](https://neoprechac.org) with swi-prolog 9.2.1 o
 Animation link:
 - [passist](https://github.com/helbling/passist) when `gcd(pattern length, number of jugglers) = 1`
 - [jugglinglab](https://github.com/jkboyce/jugglinglab) when `pattern length % number of jugglers = 0`
-- other cases under construction
+- remaining cases under construction

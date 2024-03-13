@@ -1,9 +1,9 @@
 '''
 Under construction.
 
-This script should create the animation link in the remaining cases:
+This script should create the animation link when
 
-gcd(number of jugglers, pattern length) != 1 and pattern length % number of jugglers == 0.
+gcd(number of jugglers, pattern length) != 1 and pattern length % number of jugglers != 0.
 
 '''
 import sys
