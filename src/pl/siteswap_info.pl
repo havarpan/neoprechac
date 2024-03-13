@@ -280,7 +280,11 @@ print_pattern_info(PatternWithShortPasses, NumberOfJugglers, OldSwapList, NewSwa
 	all_points_in_time(PointsInTime, NumberOfJugglers, Period),
 	what_happens(PointsInTime, Pattern, NumberOfJugglers, ActionList),
 	writePattern(Pattern, PatternWithShortPasses, NumberOfJugglers, SwapList, BackURL),
-	writePatternInfo(PatternWithShortPasses, PointsInTime, ActionList, NumberOfJugglers, Period, SwapList, BackURL),
+	%%% patch start (havarpan Mar 13 2024)
+	% writePatternInfo(PatternWithShortPasses, PointsInTime, ActionList, NumberOfJugglers, Period, SwapList, BackURL),
+	with_output_to(string(MyTable), writePatternInfo(PatternWithShortPasses, PointsInTime, ActionList, NumberOfJugglers, Period, SwapList, BackURL)),
+	format('<p>~s</p>', [MyTable]),
+	%%% patch end
 	writeOrbitInfo(Pattern, PatternWithShortPasses, NumberOfJugglers, SwapList, BackURL),
 	averageNumberOfClubs(Pattern, AverageNumberOfClubs),
 	NumberOfClubs is AverageNumberOfClubs * NumberOfJugglers,
@@ -292,7 +296,7 @@ print_pattern_info(PatternWithShortPasses, NumberOfJugglers, OldSwapList, NewSwa
 	club_distribution(ActionList, OrbitPattern, NumberOfClubs, NumberOfJugglers, Period, ClubDistribution),
 	JugglerMax is NumberOfJugglers - 1,
 	forall(between(0, JugglerMax, Juggler), writeJugglerInfo(Juggler, ActionList, SwapList, ClubDistribution, NumberOfJugglers, Period, PatternWithShortPasses, Pattern, BackURL)),
-	writeJoepassLink(PatternWithShortPasses, NumberOfJugglers, SwapList, JoePass_Cookies), 
+	writeJoepassLink(PatternWithShortPasses, NumberOfJugglers, SwapList, JoePass_Cookies, MyTable), 
 	writeHiddenInfo(PatternWithShortPasses, NumberOfJugglers, SwapList, BackURL).
 
 	
@@ -557,16 +561,31 @@ patternStrToAnimationUrl(PatternStr, NumberOfJugglers, Url) :-
     close(In).
 %%% patch end
 
-writeJoepassLink(Pattern, NumberOfJugglers, SwapList, JoePass_Cookies) :-
+
+%%% patch start (havarpan Mar 13 2024)
+patternStrToSyncAnimationUrl(MyTable, Url2) :-
+    process_create(path('python3'), ['python/patternStrToSyncAnimationUrl.py'], [stdin(pipe(Out)), stdout(pipe(In)), process(PID)]),
+    write(Out, MyTable),
+    close(Out),
+    read_string(In, _, Url2),
+    close(In),
+	process_wait(PID,_Status).
+%%% patch end
+
+writeJoepassLink(Pattern, NumberOfJugglers, SwapList, JoePass_Cookies, MyTable) :-
 	pattern_to_string(Pattern, PatternStr),
+	%%% patch start (havarpan Feb 28 2024)
+	patternStrToAnimationUrl(PatternStr, NumberOfJugglers, Url),
+	(sub_string(Url, _, _, _, 'none') -> true ; format("~s\n", [Url])),
+	%%% patch end
+	%%% patch start (havarpan Mar 13 2024)
+	patternStrToSyncAnimationUrl(MyTable, Url2),
+	(sub_string(Url2, _, _, _, 'none') -> true ; format("~s\n", [Url2])),
+	%%% patch end
 	jp_filename(Pattern, FileName),
 	JoePass_Cookies = [JoePass_Download, JoePass_Style, JoePass_File],
 	format("<div class='jp_link'>\n"),
 	format("<form id='joepass_form' action='./joepass.php' method='post'>\n"),
-	%%% patch start (havarpan Feb 28 2024)
-	patternStrToAnimationUrl(PatternStr, NumberOfJugglers, Url),
-	(sub_string(Url, _, _, _, 'none') -> true ; format("<p><a href='~s' target='_blank'>online animation</a></p>\n", [Url])),
-	%%% patch end
 	format("<input type='hidden' name='pattern' value='~s'>\n", [PatternStr]),
 	format("<input type='hidden' name='persons' value='~w'>\n", [NumberOfJugglers]),
 	format("<input type='hidden' name='file' value='~w'>\n", [FileName]),

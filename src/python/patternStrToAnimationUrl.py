@@ -1,3 +1,11 @@
+'''
+This script creates the animation link if either:
+
+   gcd(number of jugglers, pattern length) == 1
+
+   pattern length % number of jugglers) == 0.
+
+'''
 import re
 from string import ascii_lowercase
 from math import gcd, ceil
@@ -122,36 +130,6 @@ def build_jlab_pattern(throws, pass_flags, n):
     return pattern
 
 
-# helper for jlab sync pattern
-def build_jlab_sync_pattern(throws, pass_flags, n):
-
-    # copy-paste from previous helper
-    throws_with_ps = []
-    for i in range(len(throws)):
-        throw_number = throws[i]
-        pass_flag = pass_flags[i]
-        if len(set(pass_flags)) <= 2 and max(pass_flags) <= 1:
-            throw_with_p = f'{throw_number}p' if pass_flag else f'{throw_number}'
-        else:
-            throw_with_p = f'{throw_number}p{int(pass_flag)+1}' if int(pass_flag)>0 else f'{throw_number}'
-        throws_with_ps.append(throw_with_p)
-
-    # super cool generation technique
-    if n == 4 and throws_with_ps == ['3.5p4','3p3']:
-        pattern = '<(5xp4,2)(2,4p3)|0(5xp1,2)(2,4p4)!|(2,4p1)(5xp2,2)|0(2,4p2)(5xp3,2)!>'
-    elif n == 4 and throws_with_ps == ['3.5p','3']:
-        pattern = '<(5p2,2)(2,4x)|0(5p3,2)(2,4x)!|(2,4x)(5p4,2)|0(2,4x)(5p1,2)!>'
-    elif n == 4 and throws_with_ps == ['5p3','1.5p4']:
-        pattern = '<(8p3,2)(2,1xp4)|0(8p4,2)(2,1xp1)!|(2,1xp2)(8p1,2)|0(2,1xp3)(8p2,2)!>'
-    elif n == 4 and throws_with_ps == ['4.5p','2']:
-        pattern = '<(7xp2,2)(2,2)|0(7xp3,2)(2,2)!|(2,2)(7xp4,2)|0(2,2)(7xp1,2)!>'
-    else:
-        print('none', end='')
-        sys.exit()
-
-    return pattern
-
-
 def jugglinglab_link(triples, n):
 
     # strip each triple of the initial 'p' and convert to a tuple of int tuples
@@ -170,8 +148,6 @@ def jugglinglab_link(triples, n):
     pattern_length = len(triples)
     if (pattern_length % n) == 0:
         pattern = build_jlab_pattern(throws, pass_flags, n)
-    elif (n == 4 and pattern_length == 2):
-        pattern = build_jlab_sync_pattern(throws, pass_flags, n)
     else:
         print('none', end='')
         sys.exit()
@@ -197,9 +173,10 @@ def patternStrToAnimationUrl(patternStr, n):
 
     if animation_type == 'passist':
         url = passist_link(triples, n)
+        url = f'<div><p><br/><a href="{url}" target="_blank">Passist animation</a></p></div>'
     else:
         url = jugglinglab_link(triples, n)
-
+        url = f'<div><p><br/><a href="{url}" target="_blank">JugglingLab animation</a></p></div>'
     print(url, end='')
 
 

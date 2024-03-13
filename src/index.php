@@ -45,7 +45,8 @@ if ($_GET){
 
 	if (!$_GET["multiplex"]){$_GET["multiplex"] = "0";}
 
-	if (!$_GET["results"]){$_GET["results"] = 42;}
+	// if (!$_GET["results"]){$_GET["results"] = 42;}
+	if (!$_GET["results"]){$_GET["results"] = 100;}
 	
 	if (!$_GET["magic"]){$_GET["magic"] = 0;}
 	else {$magicChecked = "'checked'";}
