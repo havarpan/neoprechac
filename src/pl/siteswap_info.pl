@@ -563,8 +563,8 @@ patternStrToAnimationUrl(PatternStr, NumberOfJugglers, Url) :-
 
 
 %%% patch start (havarpan Mar 13 2024)
-patternStrToSyncAnimationUrl(MyTable, Url2) :-
-    process_create(path('python3'), ['python/patternStrToSyncAnimationUrl.py'], [stdin(pipe(Out)), stdout(pipe(In)), process(PID)]),
+patternTableToSyncAnimationUrl(MyTable, Url2) :-
+    process_create(path('python3'), ['python/patternTableToSyncAnimationUrl.py'], [stdin(pipe(Out)), stdout(pipe(In)), process(PID)]),
     write(Out, MyTable),
     close(Out),
     read_string(In, _, Url2),
@@ -572,14 +572,17 @@ patternStrToSyncAnimationUrl(MyTable, Url2) :-
 	process_wait(PID,_Status).
 %%% patch end
 
+%%% patch start (havarpan Mar 13 2024)
+% writeJoepassLink(Pattern, NumberOfJugglers, SwapList, JoePass_Cookies) :-
 writeJoepassLink(Pattern, NumberOfJugglers, SwapList, JoePass_Cookies, MyTable) :-
+%%% patch end
 	pattern_to_string(Pattern, PatternStr),
 	%%% patch start (havarpan Feb 28 2024)
 	patternStrToAnimationUrl(PatternStr, NumberOfJugglers, Url),
 	(sub_string(Url, _, _, _, 'none') -> true ; format("~s\n", [Url])),
 	%%% patch end
 	%%% patch start (havarpan Mar 13 2024)
-	patternStrToSyncAnimationUrl(MyTable, Url2),
+	patternTableToSyncAnimationUrl(MyTable, Url2),
 	(sub_string(Url2, _, _, _, 'none') -> true ; format("~s\n", [Url2])),
 	%%% patch end
 	jp_filename(Pattern, FileName),
