@@ -1,5 +1,5 @@
 
-The original [prechacthis](https://github.com/prechac/prechacthis) repository patched:
+The [prechacthis](https://github.com/prechac/prechacthis) repository patched:
 
 - `src/pl/siteswap_preprocessing.pl` updated
 - `src/index.php` updated
@@ -13,8 +13,10 @@ Animation link:
 - [passist](https://github.com/helbling/passist) when `gcd(pattern length, number of jugglers) = 1`
 - [jugglinglab](https://github.com/jkboyce/jugglinglab) otherwise:
   - async when `pattern length % number of jugglers = 0`
-  - sync otherwise:
-    - still under construction
-    - the case `n = 4, p = 2` may work
+  - otherwise sync:
+    - under construction
+    - the case `n = 4, p = 2` may work 
     - no link displayed otherwise.
-    
+
+Thanks to Miika Toukola for help!
+
