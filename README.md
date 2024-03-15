@@ -15,7 +15,7 @@ Animation link:
   - async when `pattern length % number of jugglers = 0`
   - sync in the remaining cases:
     - under construction
-    - implemented the case with four jugglers & period two
+    - the case with four jugglers & period two implemented
     - no link displayed otherwise.
 
 Thanks to Miika Toukola for help!
