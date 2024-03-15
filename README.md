@@ -13,7 +13,7 @@ Animation link:
 - [passist](https://github.com/helbling/passist) when `gcd(pattern length, number of jugglers) = 1`
 - [jugglinglab](https://github.com/jkboyce/jugglinglab) otherwise:
   - async when `pattern length % number of jugglers = 0`
-  - otherwise sync:
+  - sync in the remaining cases:
     - under construction
     - the case `n = 4, p = 2` may work 
     - no link displayed otherwise.
