@@ -165,13 +165,7 @@ def patternStrToAnimationUrl(patternStr, n):
     triples = list(re.findall(r"p\(\d[\.\d]*,\d+,\d+\)", patternStr))
     pattern_length = len(triples)
 
-    # do we know how to create the animation link
-    # todo: remaining cases
-    animation_type = 'passist'
-    if gcd(pattern_length, n) != 1:
-        animation_type='jugglinglab'
-
-    if animation_type == 'passist':
+    if gcd(pattern_length, n) == 1:
         url = passist_link(triples, n)
         url = f'<div><p><br/><a href="{url}" target="_blank">Passist animation</a></p></div>'
     else:

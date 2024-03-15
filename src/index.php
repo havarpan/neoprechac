@@ -45,8 +45,7 @@ if ($_GET){
 
 	if (!$_GET["multiplex"]){$_GET["multiplex"] = "0";}
 
-	// if (!$_GET["results"]){$_GET["results"] = 42;}
-	if (!$_GET["results"]){$_GET["results"] = 100;}
+	if (!$_GET["results"]){$_GET["results"] = 42;}
 	
 	if (!$_GET["magic"]){$_GET["magic"] = 0;}
 	else {$magicChecked = "'checked'";}
@@ -116,6 +115,7 @@ if ($_GET){
 		if ($debug) $hidden_debug = "<input type='hidden' name='debug' value='on'>";
 
 		echo "<form action='./index.php' method='get'>
+		 <p>&nbsp;<a href='https://github.com/havarpan/neoprechac' target='_blank'>source code &amp; info</a></p>
 		 <table align='center' cellpadding='10'>
 		  <tr>
 		   <td class='lable'></td>
