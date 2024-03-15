@@ -5,9 +5,11 @@ This script should create the animation link in the remaining cases:
 
     gcd(number of jugglers, pattern length) != 1 and (pattern length % number of jugglers) != 0.
 
-Currently does the case n = 4, p = 2 in a hand-to-mouth fashion:
+Currently does the case n = 4, p = 2 (probably quite okay although very messy).
 
     Premature optimization is the root of all evil!
+
+        - Sir Charles Anthony Richard Hoare
 
 '''
 import sys
