@@ -14,7 +14,8 @@ import sys
 from bs4 import BeautifulSoup
 from math import gcd
 from string import ascii_lowercase, ascii_uppercase
-from ast import literal_eval
+# from ast import literal_eval
+from copy import deepcopy
 
 
 def number_to_alphabet(n):
@@ -175,7 +176,11 @@ def strip_zeros(halfened_rows, table_data):
         stripped_rows.append(stripped_row)
     return stripped_rows
 
+
 def two_patch_cell(cell):
+
+    if cell == ('0','0'):
+        return cell
 
     # throwing hand index
     h = 1 if cell[0] == '0' else 0
@@ -209,7 +214,7 @@ def two_patch_rows(stripped_rows):
     patched_rows = []
     for row in stripped_rows:
         patched_row = []
-        for cell in row:
+        for i, cell in enumerate(row):
             if cell == '0':
                 patched_row.append(cell)
                 continue
@@ -218,9 +223,37 @@ def two_patch_rows(stripped_rows):
         patched_rows.append(patched_row)
     return patched_rows
 
-def sync_jlab(stripped_rows):
+
+def borrow_zeros(myrows):
+    two_patched_rows = deepcopy(myrows)
+    for j, row in enumerate(two_patched_rows):
+        for i, cell in enumerate(row):
+            if cell == ('0','0'):
+                n = len(row)
+                prev_cell_index = (i-1) % n
+                previous_cell = two_patched_rows[j][prev_cell_index]
+                # TODO: several zeros (not possible when n=4,p=2)
+                if previous_cell == '0':
+                    prev_cell_index = (prev_cell_index-1) % n
+                    previous_cell = two_patched_rows[j][prev_cell_index]
+                for h, throw in enumerate(previous_cell):
+                    if throw == '2':
+                        new_previous_cell = [None, None]
+                        new_previous_cell[h] = '0'
+                        new_previous_cell[1-h] = previous_cell[1-h]
+                        two_patched_rows[j][prev_cell_index] = tuple(new_previous_cell)
+                        new_current_cell = [None, None]
+                        new_current_cell[h] = '0'
+                        new_current_cell[1-h] = '2'
+                        two_patched_rows[j][i] = tuple(new_current_cell)
+                        break
+                continue
+    return two_patched_rows
+
+
+def sync_jlab(myrows):
     pattern = '<'
-    for row in stripped_rows:
+    for row in myrows:
         zero_found = False
         for cell in row:
             if cell == '0':
@@ -252,16 +285,24 @@ def patternStrToSyncAnimationUrl(html_table):
     # let's try this first
     elif n == 4 and pattern_length == 2:
 
+        # could be buggy when zeros in pattern
+
         patched_rows = sync_zero_patch(table_data)
         crossed_rows = add_crosses(patched_rows)
         halfened_rows = halfen(crossed_rows)
         stripped_rows = strip_zeros(halfened_rows, table_data)
         two_patched_rows = two_patch_rows(stripped_rows)
-        pattern = sync_jlab(two_patched_rows)
+        borrowed_rows = borrow_zeros(two_patched_rows)
+
+        # the commented ones work
+        pattern = sync_jlab(borrowed_rows)
+        # pattern = sync_jlab(two_patched_rows)
+        # pattern = sync_jlab(stripped_rows)
+        # pattern = sync_jlab(crossed_rows)
 
         # test
         url = f'https://jugglinglab.org/anim?pattern={pattern}'
-        url = f'<p><a href="{url}" target="_blank">JugglingLab animation (sync experiment)</p>'
+        url = f'<p><a href="{url}" target="_blank">JugglingLab animation (experimental)</p>'
         print(url, end='')
         sys.stdout.flush()
 

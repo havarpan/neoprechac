@@ -16,7 +16,7 @@ Animation link:
   - sync in the remaining cases:
     - under construction
     - the case with four jugglers & period two implemented
-    - no link displayed otherwise.
+    - otherwise no link displayed (yet).
 
 Thanks to Miika Toukola for help!
 
