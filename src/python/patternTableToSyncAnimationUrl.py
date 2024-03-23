@@ -5,11 +5,9 @@ This script should create the animation link in the remaining cases:
 
     gcd(number of jugglers, pattern length) != 1 and (pattern length % number of jugglers) != 0.
 
-Currently does the case n = 4, p = 2 (probably quite okay although very messy).
+Currently does some cases with four jugglers and pattern length two or six
 
     Premature optimization is the root of all evil!
-
-        - Sir Charles Anthony Richard Hoare
 
 '''
 import sys
@@ -18,6 +16,16 @@ from math import gcd
 from string import ascii_lowercase, ascii_uppercase
 # from ast import literal_eval
 from copy import deepcopy
+import os
+
+# global
+patch_factor = None
+
+# rudimentary logging facility
+cwd = os.path.abspath(os.path.dirname(__file__))
+def mylog(mystr):
+    with open(f'{cwd}/log.txt', 'a') as handle:
+        handle.write(f'{mystr}\n\n')
 
 
 def number_to_alphabet(n):
@@ -26,7 +34,8 @@ def number_to_alphabet(n):
     if int(n) < 10:
         return n
     if int(n) - 10 > 25:
-        print('none', end='')
+        # print('none', end='')
+        print(f'<p>No JugglingLab animation link (experimental): number too large</p>', end='')
         sys.stdout.flush()
         sys.exit()
     return ascii_lowercase[int(n) - 10]
@@ -55,29 +64,51 @@ def parse_table(html_table):
 
 def sync_zero_patch(table_data):
 
+    global patch_factor
+
     patched_rows = []
 
+    pattern_length = len([i for i in table_data[0] if i])
+
+    patch_factor = len(table_data[0])//pattern_length
+
     for j, row in enumerate(table_data):
+
         patched_row = []
 
         for i, cell in enumerate(row):
-            cell = '0' if not cell else cell
+
+            cell = '-' if not cell else cell
 
             if 'p' in cell:
 
                 # target_juggler should never be empty
-                # (those cases in the other script)
+                # (those cases are in the other script)
                 throw_number, target_juggler = cell.split('p')
 
-                throw_number = number_to_alphabet(int(len(row)*float(throw_number)))
+                # throw_number = number_to_alphabet(int(len(row)*float(throw_number)))
+                throw_number = int(patch_factor*float(throw_number))
                 target_juggler = ascii_uppercase.index(target_juggler) + 1
 
                 cell = f'{throw_number}p{target_juggler}'
-            else:
-                cell = f'{number_to_alphabet(int(len(row)*float(cell)))}'
 
-            # TODO: generalize 4
-            if ((i-j) % 4)  in (0,1):
+            elif '-' not in cell:
+
+                cell = f'{int(patch_factor*float(cell))}'
+
+            else: # empty cell
+
+                pass
+
+
+            ### patch (r,l) ####
+
+            # j = row, i = col
+            right_left_condition = ( (i-j) % len(row) ) % (patch_factor * 2) == 0
+
+            if cell == '-':
+                patched_cell = ('0','0')
+            elif right_left_condition:
                 patched_cell = (cell,'0')
             else:
                 patched_cell = ('0',cell)
@@ -90,6 +121,8 @@ def sync_zero_patch(table_data):
 
 def add_crosses(patched_rows):
 
+    global patch_factor
+
     crossed_rows = []
     for j, row in enumerate(patched_rows):
         crossed_row = []
@@ -100,21 +133,23 @@ def add_crosses(patched_rows):
                 fixed_throw = throw
                 if 'p' not in throw and throw != '0':
                     throw_number = throw
-                    if ((alphabet_to_number(throw_number)//len(row)) % 2) != 0:
-                        fixed_throw = f'{number_to_alphabet(throw_number)}x'
+                    if ( int(throw_number)//patch_factor ) % 2 != 0:
+                        fixed_throw = f'{throw_number}x'
+                    else:
+                        fixed_throw = f'{throw_number}'
                 elif 'p' in throw:
                     throw_number, target_juggler = throw.split('p')
-                    target_beat_phase = (i + int(alphabet_to_number(throw_number))//2) % len(row)
+                    target_beat_phase = (i + int(throw_number)) % len(row)
                     target_cell = patched_rows[int(target_juggler)-1][target_beat_phase]
 
                     # h comes into play
                     if target_cell[h] != '0': # we should not cross
-                        if (int(alphabet_to_number(throw_number)) % 2) != 0:
+                        if (int(throw_number) % 2) != 0:
                             fixed_throw = f'{throw_number}xp{target_juggler}'
                         else:
                             pass
                     elif target_cell[1-h] != '0': # we should cross
-                        if (int(alphabet_to_number(throw_number)) % 2) == 0:
+                        if (int(throw_number) % 2) == 0:
                             fixed_throw = f'{throw_number}xp{target_juggler}'
                         else:
                             pass
@@ -122,53 +157,47 @@ def add_crosses(patched_rows):
                         print('none', end='')
                         sys.stdout.flush()
                         sys.exit()
-
                 else: # throw == '0'
                     pass
                 crossed_cell.append(fixed_throw)
-
-
             crossed_row.append(tuple(crossed_cell))
         crossed_rows.append(crossed_row)
     return crossed_rows
 
 
-def halfen(crossed_rows):
-    halfened_rows = []
+def alphabetize(crossed_rows):
+    alphabetized_rows = []
     for row in crossed_rows:
-        halfened_row = []
+        alphabetized_row = []
         for cell in row:
-            halfened_cell = []
+
+            if cell == ('0'):
+                alphabetized_row.append('0')
+                continue
+
+            alphabetized_cell = []
             for throw in cell:
                 if 'x' in throw:
                     throw_number, tail = throw.split('x')
                     throw_number = alphabet_to_number(throw_number)
-                    half_number = throw_number // 2
-                    half_throw = number_to_alphabet(half_number)
-                    if len(set([(half_number % 2), (throw_number % 2)])) > 1:
-                        halfened_cell.append(f'{half_throw}{tail}')
-                    else:
-                        halfened_cell.append(f'{half_throw}x{tail}')
+                    new_throw = number_to_alphabet(throw_number)
+                    alphabetized_cell.append(f'{new_throw}x{tail}')
                 elif 'p' in throw:
                     throw_number, tail = throw.split('p')
                     throw_number = alphabet_to_number(throw_number)
-                    half_number = throw_number // 2
-                    half_throw = number_to_alphabet(half_number)
-                    if len(set([(half_number % 2), (throw_number % 2)])) > 1:
-                        halfened_cell.append(f'{half_throw}xp{tail}')
-                    else:
-                        halfened_cell.append(f'{half_throw}p{tail}')
+                    new_throw = number_to_alphabet(throw_number)
+                    alphabetized_cell.append(f'{new_throw}p{tail}')
                 else:
-                    throw = number_to_alphabet(int(alphabet_to_number(throw))//2)
-                    halfened_cell.append(f'{throw}')
-            halfened_row.append(tuple(halfened_cell))
-        halfened_rows.append(halfened_row)
-    return halfened_rows
+                    throw = number_to_alphabet(int(alphabet_to_number(throw)))
+                    alphabetized_cell.append(f'{throw}')
+            alphabetized_row.append(tuple(alphabetized_cell))
+        alphabetized_rows.append(alphabetized_row)
+    return alphabetized_rows
 
 
-def strip_zeros(halfened_rows, table_data):
+def strip_zeros(myrows, table_data):
     stripped_rows = []
-    for j, row in enumerate(halfened_rows):
+    for j, row in enumerate(myrows):
         stripped_row = []
         for i, throw in enumerate(row):
             if i == 0 and not table_data[j][i]:
@@ -178,10 +207,10 @@ def strip_zeros(halfened_rows, table_data):
         stripped_rows.append(stripped_row)
     return stripped_rows
 
-
+# helper for two_patch_rows
 def two_patch_cell(cell):
 
-    if cell == ('0','0'):
+    if cell == ('0','0') or any(set(cell) == {'0', mythrow} for mythrow in ('2x')):
         return cell
 
     # throwing hand index
@@ -194,20 +223,31 @@ def two_patch_cell(cell):
     if 'x' in throw:
         throw_number, tail = throw.split('x')
         throw_number = alphabet_to_number(throw_number)
-        new_throw_number = throw_number - 2
-        new_cell[h] = f'{new_throw_number}x{tail}'
-        new_cell[1-h] = '2'
+        new_throw_number = number_to_alphabet(throw_number - 2)
+        if str(new_throw_number) == '0': # should not happen
+            new_cell = cell
+        else:
+            new_cell[h] = f'{new_throw_number}x{tail}'
+            new_cell[1-h] = '2'
     elif 'p' in throw:
         throw_number, tail = throw.split('p')
         throw_number = alphabet_to_number(throw_number)
-        new_throw_number = throw_number - 2
-        new_cell[h] = f'{new_throw_number}p{tail}'
-        new_cell[1-h] = '2'
+        # new_throw_number = throw_number - 2
+        new_throw_number = number_to_alphabet(throw_number - 2)
+        if str(new_throw_number) == '0':
+            new_cell = cell
+        else:
+            new_cell[h] = f'{new_throw_number}p{tail}'
+            new_cell[1-h] = '2'
     else:
         throw_number = alphabet_to_number(throw)
         new_throw_number = throw_number - 2
-        new_cell[h] = f'{new_throw_number}'
-        new_cell[1-h] = '2'
+        if str(new_throw_number) == '0':
+            new_cell = cell
+        else:
+            new_throw_number = number_to_alphabet(new_throw_number)
+            new_cell[h] = f'{new_throw_number}'
+            new_cell[1-h] = '2'
 
     return new_cell
 
@@ -227,29 +267,103 @@ def two_patch_rows(stripped_rows):
 
 
 def borrow_zeros(myrows):
+
+    # probably futile but fixed an earlier bug
     two_patched_rows = deepcopy(myrows)
-    for j, row in enumerate(two_patched_rows):
-        for i, cell in enumerate(row):
+
+    def count_zeros(row):
+        counter = 0
+        for cell in row:
             if cell == ('0','0'):
+                counter += 1
+        return counter
+
+    # this is okay: if only one (0,0) throw, then things work correctly
+    if count_zeros(two_patched_rows[0]) == 1:
+
+        for j, row in enumerate(two_patched_rows):
+            for i, cell in enumerate(row):
+                if cell != ('0','0'):
+                    continue
                 n = len(row)
                 prev_cell_index = (i-1) % n
-                previous_cell = two_patched_rows[j][prev_cell_index]
-                # TODO: several zeros (not possible when n=4,p=2)
-                if previous_cell == '0':
+                prev_cell = two_patched_rows[j][prev_cell_index]
+                if prev_cell == '0': # from strip_zeros (,)!0
                     prev_cell_index = (prev_cell_index-1) % n
-                    previous_cell = two_patched_rows[j][prev_cell_index]
-                for h, throw in enumerate(previous_cell):
+                    prev_cell = two_patched_rows[j][prev_cell_index]
+
+                for h, throw in enumerate(prev_cell):
+
                     if throw == '2':
-                        new_previous_cell = [None, None]
-                        new_previous_cell[h] = '0'
-                        new_previous_cell[1-h] = previous_cell[1-h]
-                        two_patched_rows[j][prev_cell_index] = tuple(new_previous_cell)
+
                         new_current_cell = [None, None]
                         new_current_cell[h] = '0'
                         new_current_cell[1-h] = '2'
                         two_patched_rows[j][i] = tuple(new_current_cell)
+
+                        new_prev_cell = [None, None]
+                        new_prev_cell[h] = '0'
+                        new_prev_cell[1-h] = prev_cell[1-h]
+                        two_patched_rows[j][prev_cell_index] = tuple(new_prev_cell)
+
+
+    # this is not quite okay yet -- the case with more than one (0,0) throw
+    else:
+
+        for j, row in enumerate(two_patched_rows):
+
+            cell_done = False
+            for i, cell in enumerate(row):
+
+                if cell == ('0','0') or any(set(cell) == {'0', mythrow} for mythrow in ('2x')):
+                    continue
+
+                n = len(row)
+                prev_cell_index = (i-1) % n
+                # next_cell_index = (i+1) % n
+
+                prev_cell = two_patched_rows[j][prev_cell_index]
+                # next_cell = two_patched_rows[j][next_cell_index]
+
+                if prev_cell == '0': # from strip_zeros (,)!0
+                    prev_cell_index = (prev_cell_index-1) % n
+                    prev_cell = two_patched_rows[j][prev_cell_index]
+                # if next_cell == '0': # from strip_zeros (,)!0
+                    # next_cell_index = (next_cell_index-1) % n
+                    # next_cell = two_patched_rows[j][next_cell_index]
+
+                # need to have a destination for the "move two" operation
+                # tested more thoroughly below
+                if '0' not in prev_cell:
+                    continue
+
+                # adjacent_cell = prev_cell if prev_cell == ('0','0') else next_cell
+                # adj_cell_index = prev_cell_index if prev_cell == ('0','0') else next_cell_index
+                adjacent_cell = prev_cell
+                adj_cell_index = prev_cell_index
+
+                for h, throw in enumerate(cell):
+                    if throw == '2':
+                        new_adjacent_cell = [None, None]
+
+                        if adjacent_cell[1-h] != '0':
+                            continue
+
+                        new_adjacent_cell[h] = adjacent_cell[h]
+                        new_adjacent_cell[1-h] = '2'
+                        two_patched_rows[j][adj_cell_index] = tuple(new_adjacent_cell)
+
+                        new_current_cell = [None, None]
+                        new_current_cell[h] = '0'
+                        new_current_cell[1-h] = cell[1-h]
+                        two_patched_rows[j][i] = tuple(new_current_cell)
+
+                        cell_done = True
                         break
-                continue
+
+                if cell_done:
+                    break
+
     return two_patched_rows
 
 
@@ -271,7 +385,14 @@ def sync_jlab(myrows):
     return pattern
 
 
-def patternStrToSyncAnimationUrl(html_table):
+def two_patch_condition(table_rows):
+    # ruined something like 5.5p 1 in the case n=4, p=2
+    if any(set(cell) == {'0','2x'} for row in table_rows for cell in row):
+        return False
+    else:
+        return True
+
+def patternTableToSyncAnimationUrl(html_table):
 
     table_data = parse_table(html_table)
 
@@ -285,28 +406,31 @@ def patternStrToSyncAnimationUrl(html_table):
         sys.exit()
 
     # let's try this first
-    elif n == 4 and pattern_length == 2:
+    elif (
+        (n == 4 and pattern_length in [2,6])
+    ):
 
-        # could be buggy when zeros in pattern
+        try:
+            pattern = sync_zero_patch(table_data)
+            pattern = add_crosses(pattern)
+            pattern = strip_zeros(pattern, table_data)
+            if two_patch_condition(pattern):
+                pattern = two_patch_rows(pattern)
+                pattern = borrow_zeros(pattern)
+            else:
+                pattern = alphabetize(pattern)
+            pattern = sync_jlab(pattern)
+        except Exception as e:
+            print('none', end='')
+            sys.stdout.flush()
+            sys.exit()
 
-        patched_rows = sync_zero_patch(table_data)
-        crossed_rows = add_crosses(patched_rows)
-        halfened_rows = halfen(crossed_rows)
-        stripped_rows = strip_zeros(halfened_rows, table_data)
-        two_patched_rows = two_patch_rows(stripped_rows)
-        borrowed_rows = borrow_zeros(two_patched_rows)
-
-        # the commented ones work
-        pattern = sync_jlab(borrowed_rows)
-        # pattern = sync_jlab(two_patched_rows)
-        # pattern = sync_jlab(stripped_rows)
-        # pattern = sync_jlab(crossed_rows)
-
-        # test
         url = f'https://jugglinglab.org/anim?pattern={pattern}'
         url = f'<p><a href="{url}" target="_blank">JugglingLab animation (experimental)</p>'
         print(url, end='')
         sys.stdout.flush()
+        sys.exit()
+        pass
 
     else:
         print('none', end='')
@@ -317,4 +441,8 @@ def patternStrToSyncAnimationUrl(html_table):
 ### main ###
 
 html_table = sys.stdin.read()
-patternStrToSyncAnimationUrl(html_table)
+patternTableToSyncAnimationUrl(html_table)
+
+# just in case
+sys.stdout.flush()
+sys.exit()

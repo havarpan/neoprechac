@@ -15,8 +15,8 @@ Animation link:
   - async when `pattern length % number of jugglers = 0`
   - sync in the remaining cases:
     - under construction
-    - the case with four jugglers & period two implemented
-    - otherwise no link displayed (yet).
+    - no link displayed if case not implemented
+    - currently broken link in many cases with many zero-throws.
 
 Thanks to Miika Toukola for help!
 
