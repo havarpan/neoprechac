@@ -15,8 +15,8 @@ Animation link:
   - async when `pattern length % number of jugglers = 0`
   - sync in the remaining cases:
     - under construction
-    - no link displayed if case not implemented
-    - currently broken link in many cases with many zero-throws.
+    - the cases with four jugglers should be more or less okay
+    - no link displayed in other cases (yet).
 
 Thanks to Miika Toukola for help!
 

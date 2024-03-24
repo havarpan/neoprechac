@@ -5,18 +5,19 @@ This script should create the animation link in the remaining cases:
 
     gcd(number of jugglers, pattern length) != 1 and (pattern length % number of jugglers) != 0.
 
-Currently does some cases with four jugglers and pattern length two or six
+Currently may do most cases with four jugglers.
 
-    Premature optimization is the root of all evil!
 
 '''
 import sys
 from bs4 import BeautifulSoup
-from math import gcd
+from math import gcd, ceil
 from string import ascii_lowercase, ascii_uppercase
 # from ast import literal_eval
 from copy import deepcopy
 import os
+from collections import Counter
+
 
 # global
 patch_factor = None
@@ -86,8 +87,13 @@ def sync_zero_patch(table_data):
                 # (those cases are in the other script)
                 throw_number, target_juggler = cell.split('p')
 
-                # throw_number = number_to_alphabet(int(len(row)*float(throw_number)))
-                throw_number = int(patch_factor*float(throw_number))
+                # try to cope with the prechacthis rounding convention
+                if abs(float(throw_number)*patch_factor - int(float(throw_number)*patch_factor)) < 10**(-5):
+                    myfun = round
+                else:
+                    myfun = ceil
+
+                throw_number = int(myfun(patch_factor*float(throw_number)))
                 target_juggler = ascii_uppercase.index(target_juggler) + 1
 
                 cell = f'{throw_number}p{target_juggler}'
@@ -154,9 +160,35 @@ def add_crosses(patched_rows):
                         else:
                             pass
                     else: # this should not happen
-                        print('none', end='')
-                        sys.stdout.flush()
-                        sys.exit()
+                        from textwrap import dedent
+                        msg = f'''
+                        patched rows: {patched_rows}
+
+                        patch factor: {patch_factor}
+
+                        row index: {j}
+
+                        row: {row}
+
+                        col index: {i}
+
+                        cell: {cell}
+
+                        throw: {throw}
+
+                        target juggler: {target_juggler}
+
+                        target beat phase: {target_beat_phase}
+
+                        target cell: {target_cell}
+
+                            '''
+                        raise Exception(
+                            f'{dedent(msg)}'
+                        )
+                        # print('none', end='')
+                        # sys.stdout.flush()
+                        # sys.exit()
                 else: # throw == '0'
                     pass
                 crossed_cell.append(fixed_throw)
@@ -266,6 +298,7 @@ def two_patch_rows(stripped_rows):
     return patched_rows
 
 
+# somewhat unorganized
 def borrow_zeros(myrows):
 
     # probably futile but fixed an earlier bug
@@ -307,8 +340,14 @@ def borrow_zeros(myrows):
                         two_patched_rows[j][prev_cell_index] = tuple(new_prev_cell)
 
 
-    # this is not quite okay yet -- the case with more than one (0,0) throw
     else:
+        '''
+        currently we block all the other cases except the above and the case
+        where all but one of the throws are zeros
+
+        in that case the below should work although it's a bit messy
+
+        '''
 
         for j, row in enumerate(two_patched_rows):
 
@@ -386,11 +425,20 @@ def sync_jlab(myrows):
 
 
 def two_patch_condition(table_rows):
-    # ruined something like 5.5p 1 in the case n=4, p=2
+
+    # this ruined something like 5.5p 1 in the case n=4, p=2
     if any(set(cell) == {'0','2x'} for row in table_rows for cell in row):
         return False
-    else:
-        return True
+
+    # don't know yet how to two-patch most of these cases
+    count = Counter(table_rows[0])
+    zero_count = count[('0','0')]
+    if zero_count > 1 and zero_count <= len(table_rows[0]) - 2:
+        return False
+
+    # otherwise we should be mostly fine
+    return True
+
 
 def patternTableToSyncAnimationUrl(html_table):
 
@@ -407,21 +455,31 @@ def patternTableToSyncAnimationUrl(html_table):
 
     # let's try this first
     elif (
-        (n == 4 and pattern_length in [2,6])
+        (n == 4) # or
+        # (n == 6 and pattern_length in [3])
     ):
 
         try:
             pattern = sync_zero_patch(table_data)
+            # mylog(f'sync_zero_patch:\n{pattern}\n\n')
             pattern = add_crosses(pattern)
+            # mylog(f'add_crosses:\n{pattern}\n\n')
             pattern = strip_zeros(pattern, table_data)
+            # mylog(f'strip_zeros:\n{pattern}\n\n')
             if two_patch_condition(pattern):
+            # if False:
                 pattern = two_patch_rows(pattern)
+                # mylog(f'two_patch_rows:\n{pattern}\n\n')
                 pattern = borrow_zeros(pattern)
+                # mylog(f'borrow_zeros:\n{pattern}\n\n')
             else:
                 pattern = alphabetize(pattern)
+                # mylog(f'alphabetize:\n{pattern}\n\n')
             pattern = sync_jlab(pattern)
+            # mylog(f'sync_jlab:\n{pattern}\n\n')
         except Exception as e:
-            print('none', end='')
+            # mylog(f'exception: {e}')
+            print(f'<p>No JugglingLab animation link (experimental): exception occurred</p>', end='')
             sys.stdout.flush()
             sys.exit()
 
@@ -433,7 +491,8 @@ def patternTableToSyncAnimationUrl(html_table):
         pass
 
     else:
-        print('none', end='')
+        # print('none', end='')
+        print(f'<p>No JugglingLab animation link (experimental): case not implemented</p>', end='')
         sys.stdout.flush()
         sys.exit()
 
