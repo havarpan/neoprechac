@@ -5,7 +5,7 @@ This script should create the animation link in the remaining cases:
 
     gcd(number of jugglers, pattern length) != 1 and (pattern length % number of jugglers) != 0.
 
-Currently may do most cases with four jugglers.
+Currently may do most cases with four jugglers and some cases with six jugglers.
 
 
 '''
@@ -139,10 +139,16 @@ def add_crosses(patched_rows):
                 fixed_throw = throw
                 if 'p' not in throw and throw != '0':
                     throw_number = throw
-                    if ( int(throw_number)//patch_factor ) % 2 != 0:
-                        fixed_throw = f'{throw_number}x'
+                    if len(patched_rows) != 6:
+                        if ( int(throw_number)//patch_factor ) % 2 != 0:
+                            fixed_throw = f'{throw_number}x'
+                        else:
+                            fixed_throw = f'{throw_number}'
                     else:
-                        fixed_throw = f'{throw_number}'
+                        if ( int(throw_number)//patch_factor ) % 2 != 0:
+                            fixed_throw = f'{throw_number}'
+                        else:
+                            fixed_throw = f'{throw_number}x'
                 elif 'p' in throw:
                     throw_number, target_juggler = throw.split('p')
                     target_beat_phase = (i + int(throw_number)) % len(row)
@@ -436,6 +442,10 @@ def two_patch_condition(table_rows):
     if zero_count > 1 and zero_count <= len(table_rows[0]) - 2:
         return False
 
+    # the six-juggler case under construction
+    if len(table_rows) == 6:
+        return False
+
     # otherwise we should be mostly fine
     return True
 
@@ -453,10 +463,11 @@ def patternTableToSyncAnimationUrl(html_table):
         sys.stdout.flush()
         sys.exit()
 
-    # let's try this first
     elif (
-        (n == 4) # or
-        # (n == 6 and pattern_length in [3])
+        # this should be mostly okay
+        (n == 4) or
+        # this should display a link (perhaps not correct always)
+        (n == 6 and pattern_length in [3])
     ):
 
         try:
