@@ -9,6 +9,8 @@ The [prechacthis](https://github.com/prechac/prechacthis) repository patched:
 
 Runs at [https://neoprechac.org](https://neoprechac.org) with swi-prolog 9.2.1 on ubuntu.
 
+Maintenance break currently ongoing (started Mon Apr 1 at 8:26 EET).
+
 Animation link:
 - [passist](https://github.com/helbling/passist) when `gcd(pattern length, number of jugglers) = 1`
 - [jugglinglab](https://github.com/jkboyce/jugglinglab) otherwise:
