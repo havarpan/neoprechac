@@ -40,7 +40,7 @@ def number_to_alphabet(n):
     if int(n) < 10:
         return n
     if int(n) - 10 > 25:
-        print('none', end='')
+        print(f'<p>No passist animation link: throw too large</p>', end='')
         sys.exit()
     return ascii_lowercase[int(n) - 10]
 
@@ -139,7 +139,7 @@ def jugglinglab_link(triples, n):
 
     # test if we have alphabet throws (disabled)
     if max(max(t) for t in triples) > 9:
-        print('none', end='')
+        print(f'<p>No JugglingLab animation link: alphabet throws not enabled yet</p>', end='')
         sys.exit()
 
     throws = tuple(t[0] for t in triples)
