@@ -5,7 +5,7 @@ This script should create the animation link in the remaining cases:
 
     gcd(number of jugglers, pattern length) != 1 and (pattern length % number of jugglers) != 0.
 
-Currently may do most cases with four jugglers and some cases with six jugglers.
+Currently may do most cases with four jugglers.
 
 
 '''

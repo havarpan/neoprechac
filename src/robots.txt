@@ -1,4 +1,7 @@
-# robots.txt for http://www.prechacthis.org
+# robots.txt for https://neoprechac.org
 User-agent: *
-Disallow: /pl/
-Disallow: /doc/sections/
+User-agent: Googlebot
+User-agent: AdsBot-Google
+User-agent: AdsBot
+User-agent: AhrefsBot
+Disallow: /

@@ -5,8 +5,8 @@
 		$back_url_encoded = rawurlencode($back_url_decoded);
 	}
 	if (!isset($_REQUEST["ajax"])) {
-?>		
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+echo <<<EOD
+<!DOCTYPE html>
 <html>
 <head>
 	<title>PrechacThis - Pattern Info</title>
@@ -18,15 +18,13 @@
 	<script type="text/javascript" src="./js/ajax.js"></script>
 </head>
 <body>
-<?php
+EOD;
+	}
 	if($_REQUEST["back"]) {
 		echo "<p class='back'><a href='./?".$back_url_decoded."'>back to results</a></p>";
 	}	
-?>
-	<table align='center' cellpadding='0'><tr><td><div id='content' align='center'>
-<?php
+echo "<table align='center' cellpadding='0'><tr><td><div id='content' align='center'>";
 
-}
 $debug = false;
 
 if ($_REQUEST){
@@ -41,14 +39,14 @@ if ($_REQUEST){
 		$swaplist = "[]";
 	}
 	
-	if($_REQUEST["newswap"]) {
+	if(!empty($_REQUEST["newswap"]) && $_REQUEST["newswap"]) {
 		$newswap = $_REQUEST["newswap"];
 	} else {
 		$newswap = "[]";
 	}
 	
 		
-	if($_REQUEST["hreftype"] == "ajax") {
+	if(!empty($_REQUEST["hreftype"]) && $_REQUEST["hreftype"] == "ajax") {
 		$hreftype = $_REQUEST["hreftype"];
 	} else {
 		$hreftype = "html";
@@ -73,7 +71,9 @@ if ($_REQUEST){
 	$joepass_cookies .= "]";
 	//echo $joepass_cookies;
 	
-	if($_REQUEST["debug"]=="on") $debug = true;
+	if(!empty($_REQUEST["debug"])) {
+			if ($_REQUEST["debug"]=="on") $debug = true;
+	}
 
 	//$browser = get_browser();
 	//echo ($browser['javascript']);
@@ -114,10 +114,11 @@ if (!isset($_REQUEST["ajax"])) {
 	}
 	echo "<span id='linkhere'></span>";
 	echo "</p>";
-?>	
+}
+
+echo <<<EOD
 <script type="text/javascript" src="./js/swap.js"></script>
 </body>
 </html>
-<?php
-}
+EOD;
 ?>

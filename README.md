@@ -1,9 +1,10 @@
 
 The [prechacthis](https://github.com/prechac/prechacthis) repository patched:
 
-- `src/pl/siteswap_preprocessing.pl` updated
-- `src/index.php` updated
 - unnecessary dirs and files removed
+- `src/index.php` updated
+- `src/info.php` updated
+- `src/pl/siteswap_preprocessing.pl` updated
 - `src/python` added (calculate animation link)
 - `src/pl/siteswap_info.pl` modified (display animation link).
 
