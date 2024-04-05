@@ -17,6 +17,7 @@ if ($_GET){
 	if (!empty($_GET["debug"])) {
         if($_GET["debug"]=="on") $debug = true;
 	}
+    $doku = doku($_GET["doku"]??false);
     if(!empty($doku)){
             echo <<<EOD
             <table align='center' cellpadding='0'>
@@ -219,7 +220,7 @@ if ($_GET){
              <option value='_'" . ($maxPassSelected[0]??"") . ">&nbsp;</option>
             </select>
            </td>
-          </tr>".
+          </tr>";
         /*  <tr>
            <td class='lable'>Multiplexes:</td>
            <td class='input'>
@@ -233,7 +234,7 @@ if ($_GET){
            </td>
            $doku[multiplex]
           </tr>*/
-          "<tr>
+          echo "<tr>
            <td class='lable'>Contain:</td>
 		   <td class='input'><input type='text' name='jugglerdoes' value='";
 		   if (!empty($_GET['jugglerdoes'])) {
@@ -272,10 +273,10 @@ if ($_GET){
           <tr>
            <td class='lable'>React:</td>
 		   <td class='input'><input type='text' name='react' value='";
-           if (!empty($doku['react'])) {
-               echo $doku['react'];
+           if (!empty($_GET['react'])) {
+               echo $_GET['react'];
            }
-           echo "'></td>";
+          echo "'></td>";
            if (!empty($doku['react'])) {
                echo $doku['react'];
            }
@@ -334,19 +335,19 @@ if ($_GET){
 
         function doku($doku_flag){
         if ($doku_flag){
-        $mydoku["head"]     = "   <td class='head'>Meaning</td>\n";
-        $mydoku["persons"]  = "   <td class='sample'>2 persons</td>\n";
-        $mydoku["objects"]  = "   <td class='sample'>4 or 5 objects</td>\n";
-        $mydoku["length"]   = "   <td class='sample'>period length 4, 5 or 6.</td>\n";
-        $mydoku["max"]      = "   <td class='sample'>highest throw is a 4</td>\n";
-        $mydoku["multiplex"]= "   <td class='sample'>no multiplexes</td>\n";
-        $mydoku["exclude"]  = "   <td class='sample'>exclude patterns that contain<br>a 0, a 1 1 or a 2 2</td>\n";
-        $mydoku["contain"]  = "   <td class='sample'>find patterns that contain<br>3 3p or 3 4p or 3 followed by a pass.</td>\n";
-        $mydoku["clubdoes"] = "   <td class='sample'>a club does a 1 or a 2 followed by a 1p or a 1.5p<br>or the other way round.</td>\n";
-        $mydoku["react"]    = "   <td class='sample'>throw a 3 underneath an arriving 2p<br>or before catching a 4p throw a 4<br>or react with a 1.5p to a 3.</td>\n";
-        $mydoku["results"]  = "   <td class='sample'>don't show more than 42 results.</td>\n";
-        }else{$mydoku="";}
-        return $mydoku;
+        $doku["head"]     = "   <td class='head'>Meaning</td>\n";
+        $doku["persons"]  = "   <td class='sample'>2 persons</td>\n";
+        $doku["objects"]  = "   <td class='sample'>4 or 5 objects</td>\n";
+        $doku["length"]   = "   <td class='sample'>period length 4, 5 or 6.</td>\n";
+        $doku["max"]      = "   <td class='sample'>highest throw is a 4</td>\n";
+        $doku["multiplex"]= "   <td class='sample'>no multiplexes</td>\n";
+        $doku["exclude"]  = "   <td class='sample'>exclude patterns that contain<br>a 0, a 1 1 or a 2 2</td>\n";
+        $doku["contain"]  = "   <td class='sample'>find patterns that contain<br>3 3p or 3 4p or 3 followed by a pass.</td>\n";
+        $doku["clubdoes"] = "   <td class='sample'>a club does a 1 or a 2 followed by a 1p or a 1.5p<br>or the other way round.</td>\n";
+        $doku["react"]    = "   <td class='sample'>throw a 3 underneath an arriving 2p<br>or before catching a 4p throw a 4<br>or react with a 1.5p to a 3.</td>\n";
+        $doku["results"]  = "   <td class='sample'>don't show more than 42 results.</td>\n";
+        }else{$doku="";}
+        return $doku;
         }
 
 
