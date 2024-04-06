@@ -8,7 +8,7 @@ The [prechacthis](https://github.com/prechac/prechacthis) repository patched:
 - `src/python` added (calculate animation link)
 - `src/pl/siteswap_info.pl` modified (display animation link).
 
-Runs at [https://neoprechac.org](https://neoprechac.org) with swi-prolog 9.2.1 on ubuntu.
+Runs at [https://neoprechac.org](https://neoprechac.org) with swi-prolog 9.2.3 on ubuntu.
 
 Animation link:
 - [passist](https://github.com/helbling/passist) when `gcd(pattern length, number of jugglers) = 1`
