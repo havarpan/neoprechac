@@ -1,5 +1,5 @@
 <?php
-	if($_REQUEST["back"]) {
+	if(!empty($_REQUEST["back"])) {
 		$back_url = $_REQUEST["back"];
 		$back_url_decoded = rawurldecode($back_url);
 		$back_url_encoded = rawurlencode($back_url_decoded);
@@ -20,7 +20,7 @@ echo <<<EOD
 <body>
 EOD;
 	}
-	if($_REQUEST["back"]) {
+	if(!empty($_REQUEST["back"])) {
 		echo "<p class='back'><a href='./?".$back_url_decoded."'>back to results</a></p>";
 	}	
 echo "<table align='center' cellpadding='0'><tr><td><div id='content' align='center'>";
@@ -82,7 +82,7 @@ if ($_REQUEST){
 
 		$errorlogfile = tempnam("/tmp", "siteswap_info");
 		
-		$plquery  = "swipl -q "
+		$plquery  = "timeout 20s swipl -q "
 		          . "-f " . dirname($_SERVER["SCRIPT_FILENAME"]) . "/pl/siteswap.pl "
 		          . "-g \"print_pattern_info("
 		          . $_REQUEST["pattern"] . ", "
@@ -109,7 +109,7 @@ if (!isset($_REQUEST["ajax"])) {
 	
 	echo "\n</div></td></tr></table>\n";	
 	echo "<br><p class='back'>";
-	if($_REQUEST["back"]) {
+	if(!empty($_REQUEST["back"])) {
 		echo "<a href='./?".$back_url_decoded."'>back to results</a>";
 	}
 	echo "<span id='linkhere'></span>";

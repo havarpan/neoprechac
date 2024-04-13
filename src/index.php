@@ -50,7 +50,7 @@ if (!empty($_GET)){
     $_GET["lengths"] = str_replace(";", "or", $_GET["lengths"]);
     $lengths = explode("or", $_GET["lengths"]);
     
-    if ($_GET["persons"]){echo "<h2>" . $_GET["persons"] . " persons</h2>";}
+    if (!empty($_GET["persons"])){echo "<h2>" . $_GET["persons"] . " persons</h2>";}
 
     if (empty($_GET["multiplex"])){$_GET["multiplex"] = "0";}
 
@@ -65,7 +65,7 @@ if (!empty($_GET)){
         foreach($lengths as $length){
             $errorlogfile = tempnam("/tmp", "siteswap");
     
-            $plquery  = "swipl -q "
+            $plquery  = "timeout 20s swipl -q "
                               // flags outdated or unavailable, seems to work without them (havarpan Feb 27 2024)
                               // . "-L5M " // local stack size to 5 MB
                               // . "-G12M " // global stack size to 12 MB
